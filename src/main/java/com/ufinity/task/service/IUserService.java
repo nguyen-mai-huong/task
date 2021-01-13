@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface IUserService {
   public List<User> listUsers();
+
+  String login(String username, String password);
 }

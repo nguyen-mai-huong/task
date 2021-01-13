@@ -25,6 +25,8 @@ public class User {
   @Column(name = "username", length = 100, nullable = false, unique = true)
   private String username;
 
+  @Column(name = "password", length = 60, nullable = false)
+  private String password;
 
   @Column(name = "email", length = 50)
   private String email;
@@ -48,7 +50,7 @@ public class User {
 
   @Override
   public String toString() {
-    return String.format("User[id=%d, username=%s, email=%s]", id, username, email);
+    return String.format("User[id=%d, username=%s, password=%s, email=%s]", id, username, password, email);
   }
 
 
