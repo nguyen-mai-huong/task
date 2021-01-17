@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class User {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(name = "username", length = 100, nullable = false, unique = true)
@@ -43,9 +43,9 @@ public class User {
   @Column(name = "updatedDate", nullable = false)
   private LocalDateTime updatedDate;
 
-  public User(String username, String email) {
+  public User(String username, String password) {
     this.username = username;
-    this.email = email;
+    this.password = password;
   }
 
   @Override
