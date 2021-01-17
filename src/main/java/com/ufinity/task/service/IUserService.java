@@ -8,4 +8,6 @@ public interface IUserService {
   public List<User> listUsers();
 
   String login(String username, String password);
+
+  String signup(String username, String password, String email);
 }

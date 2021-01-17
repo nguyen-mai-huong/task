@@ -4,8 +4,10 @@ import com.ufinity.task.model.User;
 import com.ufinity.task.repo.UserDao;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.ufinity.task.utils.Constants.ERROR;
 import static com.ufinity.task.utils.Constants.OK;
 import static com.ufinity.task.utils.Constants.USER_CREDENTIALS_NOT_MATCH;
 import static com.ufinity.task.utils.Constants.USER_NOT_EXIST;
@@ -39,5 +41,32 @@ public class UserService implements IUserService{
     }
 
     return OK;
+  }
+
+  @Override
+  public String signup(String username, String password, String email) {
+    // validate username
+
+    // validate password
+
+    Long createdBy = 1L;
+    LocalDateTime now = LocalDateTime.now();
+
+    User user = new User(username, password);
+    user.setEmail(email);
+    user.setCreatedBy(createdBy);
+    user.setCreatedDate(now);
+    user.setUpdatedBy(createdBy);
+    user.setUpdatedDate(now);
+
+    try {
+      userDao.save(user);
+    } catch (Exception e) {
+      // Failed to create user
+      return ERROR;
+    }
+
+    return OK;
+
   }
 }

@@ -1,10 +1,12 @@
 package com.ufinity.task.controller;
 
 import com.ufinity.task.model.User;
+import com.ufinity.task.model.UserModel;
 import com.ufinity.task.service.UserService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,6 +43,15 @@ public class UserController {
       resultMap.put("errors", loginCode);
     }
 
+    return resultMap;
+  }
+
+  @PostMapping("user/signup")
+  public Map<String, String> signup(@RequestBody UserModel userModel) {
+    Map<String, String> resultMap = new HashMap<>();
+    String signUpCode = userService.signup(userModel.getUsername(), userModel.getPassword(), userModel.getEmail());
+
+    resultMap.put("code", signUpCode);
     return resultMap;
   }
 
