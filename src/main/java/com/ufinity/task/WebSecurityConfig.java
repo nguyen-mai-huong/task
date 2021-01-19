@@ -25,5 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/users/list").permitAll()
             .antMatchers("/user/signup").permitAll()
             .antMatchers("/user/roles").permitAll();
+
+    http.csrf().ignoringAntMatchers("/user/login").ignoringAntMatchers("/user/signup");
   }
 }
