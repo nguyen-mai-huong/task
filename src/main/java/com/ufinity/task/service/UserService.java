@@ -1,8 +1,11 @@
 package com.ufinity.task.service;
 
 import com.ufinity.task.model.User;
+import com.ufinity.task.repo.RoleDao;
 import com.ufinity.task.repo.UserDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,9 +19,14 @@ import static com.ufinity.task.utils.Constants.USER_NOT_EXIST;
 public class UserService implements IUserService{
 
   private UserDao userDao;
+  private RoleDao roleDao;
+  private BCryptPasswordEncoder passwordEncoder;
 
-  public UserService(UserDao userDao) {
+  @Autowired
+  public UserService(UserDao userDao, RoleDao roleDao,BCryptPasswordEncoder passwordEncoder) {
     this.userDao = userDao;
+    this.roleDao = roleDao;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Override
@@ -52,7 +60,7 @@ public class UserService implements IUserService{
     Long createdBy = 1L;
     LocalDateTime now = LocalDateTime.now();
 
-    User user = new User(username, password);
+    User user = new User(username, passwordEncoder.encode(password));
     user.setEmail(email);
     user.setCreatedBy(createdBy);
     user.setCreatedDate(now);
