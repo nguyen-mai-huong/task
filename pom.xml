@@ -43,7 +43,23 @@
             <artifactId>lombok</artifactId>
             <version>1.18.16</version>
         </dependency>
-    </dependencies>
+
+		<!-- Adding Spring Security dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>5.4.0</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
