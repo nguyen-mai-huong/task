@@ -1,6 +1,7 @@
 package com.ufinity.task.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(name = "userrole", uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "roleId"})})
 @Data
+@NoArgsConstructor
 public class UserRole {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

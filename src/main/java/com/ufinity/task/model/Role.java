@@ -2,6 +2,7 @@ package com.ufinity.task.model;
 
 import com.ufinity.task.utils.RoleType;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(name = "role", uniqueConstraints = { @UniqueConstraint(columnNames = {"roleType"})})
 @Data
+@NoArgsConstructor
 public class Role {
 
   @Id

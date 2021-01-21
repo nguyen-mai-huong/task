@@ -7,7 +7,9 @@ import java.util.List;
 public interface IUserService {
   public List<User> listUsers();
 
-  String login(String username, String password);
+  public User findByUsername(String username);
 
   String signup(String username, String password, String email);
+
+  List<String> getUserRoles(String username);
 }

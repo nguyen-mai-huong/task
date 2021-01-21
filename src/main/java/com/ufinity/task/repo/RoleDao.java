@@ -12,7 +12,7 @@ public interface RoleDao extends JpaRepository<Role, Long> {
   @Query(value = "SELECT r.roleType " +
           "FROM Role r, UserRole ur " +
           "WHERE ur.userId = :userId AND ur.roleId = r.id ", nativeQuery = true)
-  List<Role> findUserRoles(@Param("userId") long userId);
+  List<String> findUserRoles(@Param("userId") long userId);
 
   Role findByRoleType(RoleType roleType);
 }
