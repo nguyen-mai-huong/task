@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Box, Button, Container, CssBaseline, Grid, makeStyles, Paper, TextField, Typography, withStyles } from '@material-ui/core';
+import { useState } from "react";
+import { Box, Button, CssBaseline, Grid, Paper, TextField, Typography } from '@material-ui/core';
 import Copyright from './Copyright';
 import httpClient from '../httpClient';
 import { Redirect } from 'react-router-dom';

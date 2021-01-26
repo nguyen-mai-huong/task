@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 
 import httpClient from '../httpClient';
 
-import { Grid, Typography, TextField, Button, Box, CssBaseline } from '@material-ui/core';
+import { Grid, Typography, TextField, Button, Box, CssBaseline, Paper } from '@material-ui/core';
 import useStyles from '../styles';
 import Copyright from '../components/Copyright';
 
