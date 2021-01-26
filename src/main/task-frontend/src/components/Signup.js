@@ -29,19 +29,22 @@ function Signup(props) {
   }
 
   const handleEmail = (event) => {
-    setEmail(event.target.email);
+    setEmail(event.target.value);
   }
 
   const validate = () => {
+    let isValid = true;
     if (!validateUsername()) {
       setIsValidUsername(false);
+      isValid = false;
     }
 
     if (!validatePassword()) {
       setIsValidPassword(false);
+      isValid = false;
     }
 
-    return isValidUsername && isValidPassword;
+    return isValid;
   }
 
   const validateUsername = () => {
