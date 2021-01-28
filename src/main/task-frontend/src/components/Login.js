@@ -3,11 +3,12 @@ import { Redirect } from 'react-router-dom';
 
 import httpClient from '../httpClient';
 
-import { Grid, Typography, TextField, Button, Box, CssBaseline, Paper } from '@material-ui/core';
+import { Grid, Typography, TextField, Button, Box, CssBaseline, Paper, Link } from '@material-ui/core';
 import useStyles from '../styles';
 import Copyright from '../components/Copyright';
 
 function Login(props) {
+  // process.env.PORT = 3000;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -58,6 +59,7 @@ function Login(props) {
           <Typography component="h1" variant="h5">
             Singapore Examinations and Assessment Board
           </Typography>
+          <small>You are running this application with  <b>{process.env.NODE_ENV}</b> params.</small>
           <form className={classes.form}>
             <TextField 
               variant="outlined"
@@ -89,6 +91,13 @@ function Login(props) {
             >
               Log In
             </Button>
+            <Grid container direction="row" justify="center" className={classes.singpass}>
+              <Grid item>
+                <Link href="#" variant="body2" color="textSecondary">
+                  Or log in with SingPass
+                </Link>
+              </Grid>
+            </Grid>
             <Box mt={5}>
               <Copyright />
             </Box>

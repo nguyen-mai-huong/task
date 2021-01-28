@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
   },
   home: {
     height: '100vh',
+  },
+  singpass: {
+    marginTop: theme.spacing(1),
   }
 }));
 
