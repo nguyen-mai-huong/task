@@ -44,6 +44,16 @@ function Login(props) {
     })
   }
 
+  const handleSingPassLogin = (event) => {
+    event.preventDefault();
+
+    httpClient.get('/singpass/login').then((response) => {
+      console.log("Response: ", response);
+    }).catch((error) => {
+      console.log("Error: ", error);
+    })
+  }
+
   if (props.isLogined) {
     return <Redirect to="/home" />;
   };
@@ -93,7 +103,7 @@ function Login(props) {
             </Button>
             <Grid container direction="row" justify="center" className={classes.singpass}>
               <Grid item>
-                <Link href="#" variant="body2" color="textSecondary">
+                <Link href="#" variant="body2" color="textSecondary" onClick={handleSingPassLogin}>
                   Or log in with SingPass
                 </Link>
               </Grid>
