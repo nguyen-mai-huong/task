@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ufinity</groupId>
-	<artifactId>task</artifactId>
+	<artifactId>taskDemo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>task</name>
+	<name>taskDemo</name>
 	<description>Demo project</description>
 
 	<properties>
@@ -55,10 +55,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<version>5.4.0</version>
+			<groupId>io.c</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
 		</dependency>
+
+
 	</dependencies>
 
 	<build>
