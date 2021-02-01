@@ -53,6 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.authorizeRequests()
             .antMatchers("/").permitAll()
             .antMatchers("/user/login").permitAll()
+            .antMatchers("/singpass/login").permitAll()
+            .antMatchers("/login/oauth2/code/singpass").permitAll()
             .antMatchers("/user/logout").permitAll()
             .antMatchers("/user/signup").permitAll()
             .anyRequest().authenticated()
