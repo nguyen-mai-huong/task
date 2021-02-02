@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,9 +42,14 @@ public class OAuth2LoginController {
 
   // add request param state later
   @GetMapping("login/oauth2/code/singpass")
-  public void processAuthCodeAndExchangeToken(@RequestParam("code") String code){
+  public void processAuthCodeAndExchangeToken(@RequestParam("code") String code, HttpServletRequest request, HttpServletResponse response){
     try {
-      oAuth2LoginService.processAuthCodeAndExchangeToken(code);
+      boolean canCreateSession =  oAuth2LoginService.processAuthCodeAndExchangeToken(code);
+      if (canCreateSession) {
+        request.getSession(true);
+        response.sendRedirect("http://localhost:3000/waiting");
+      }
+
     } catch (Exception e) {
       e.printStackTrace();
     }

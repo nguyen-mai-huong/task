@@ -55,7 +55,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.c</groupId>
+			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
 		</dependency>
