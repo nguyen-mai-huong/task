@@ -15,18 +15,6 @@ import java.util.Map;
 @RestController
 public class OAuth2LoginController {
 
-  @Value("${oauth2.client.registration.singpass.client-id}")
-  private String clientId;
-
-  @Value("${oauth2.client.registration.singpass.client-secret}")
-  private String clientSecret;
-
-  @Value("${oauth2.client.registration.singpass.authorization-uri}")
-  private String authorizationUri;
-
-  @Value("${oauth2.client.registration.singpass.redirect-uri}")
-  private String redirectUri;
-
   @Autowired
   private OAuth2LoginService oAuth2LoginService;
 
