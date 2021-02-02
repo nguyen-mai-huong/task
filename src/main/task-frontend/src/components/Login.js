@@ -49,9 +49,14 @@ function Login(props) {
 
     httpClient.get('/singpass/login').then((response) => {
       console.log("Response: ", response);
+      handleRedirectToSingPass(response.data.redirect_uri);
     }).catch((error) => {
       console.log("Error: ", error);
     })
+  }
+
+  const handleRedirectToSingPass = (redirect_uri) => {
+    window.location = `http://localhost:5156/singpass/authorize?redirect_uri=${redirect_uri}`;
   }
 
   if (props.isLogined) {
