@@ -30,14 +30,9 @@ public class OAuth2LoginController {
   @Autowired
   private OAuth2LoginService oAuth2LoginService;
 
-
-
   @GetMapping("singpass/login")
   public Map<String, String> loginWithSingPass() {
-    Map<String, String> redirectParamsMap = new HashMap<>();
-    redirectParamsMap.put("authorization_uri", authorizationUri);
-    redirectParamsMap.put("redirect_uri", redirectUri);
-    return redirectParamsMap;
+    return oAuth2LoginService.loginWithSingPass();
   }
 
   // add request param state later
