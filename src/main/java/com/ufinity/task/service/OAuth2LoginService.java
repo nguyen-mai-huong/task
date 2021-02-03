@@ -2,7 +2,6 @@ package com.ufinity.task.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ufinity.task.utils.TokenUtils;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,9 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -23,7 +21,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +56,11 @@ public class OAuth2LoginService {
   @Value("${oauth2.client.registration.singpass.token-uri}")
   private String tokenUri;
 
+  @Value("${oauth2.client.registration.singpass}")
+  private String authorizationServerId;
+
+
+
   public Map<String, String> loginWithSingPass() {
     Map<String, String> redirectParamsMap = new HashMap<>();
     redirectParamsMap.put("authorization_uri", authorizationUri);
@@ -69,10 +80,27 @@ public class OAuth2LoginService {
 
     JsonNode node = convertToJsonNode((tokenExchangeRequestResponse.body()));
 
-    System.out.println("[TokenExchangeRequest] Subject is: " + node.get("id_token").get("sub").textValue());
+    // Enable signing and try to get id token
+
+    String idToken = node.get("id_token").textValue();
+    boolean isValidSignature = verifySignature(idToken);
+    System.out.println("DEBUG 06: is valid signature " + isValidSignature);
+
+    if (!isValidSignature) {
+      resultMap.put("code", ERROR);
+      return resultMap;
+    }
+
+    String encodedPayload = idToken.trim().split("\\.")[1];
+    String payload = new String(Base64.getDecoder().decode(encodedPayload), StandardCharsets.UTF_8);
+    boolean isValidClaim = verifyClaims(payload);
+    if (!isValidClaim) {
+      resultMap.put("code", ERROR);
+      return resultMap;
+    }
 
     // Subject is: s=T0066846F,u=4
-    String nric = node.get("id_token").get("sub").textValue().split(",")[0].substring(2);
+    String nric = getSubject(payload);
     System.out.println("[TokenExchangeRequest] NRIC is: " + nric);
 
     HttpRequest getUserInfoRequest = prepareGetUserInfoRequest(nric);
@@ -160,4 +188,45 @@ public class OAuth2LoginService {
     System.out.println("[UserInfoRequest][JWTToken] The token is " + token);
     return token;
   }
+
+
+  // Reference: auth0 java-jwt
+  private boolean verifySignature(String token) throws InvalidKeyException, CertificateException, FileNotFoundException, NoSuchAlgorithmException, SignatureException {
+    String[] parts = token.trim().split("\\.");
+    if (parts == null || parts.length != 3) {
+      return false;
+    }
+
+    String pathToPublicKey = System.getProperty("user.dir") + System.getProperty("file.separator") + "src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "resources" + System.getProperty("file.separator") + "spcp.crt";
+    Path path = Paths.get(pathToPublicKey);
+
+    CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+    Certificate certificate = certificateFactory.generateCertificate(new FileInputStream(path.toFile()));
+    PublicKey publicKey = certificate.getPublicKey();
+
+    Signature signature = Signature.getInstance("SHA256withRSA");
+    signature.initVerify(publicKey);
+    signature.update(parts[0].getBytes(StandardCharsets.UTF_8));
+    signature.update((byte) 46);
+    signature.update(parts[1].getBytes(StandardCharsets.UTF_8));
+
+    byte[] tokenSignature = Base64.getUrlDecoder().decode(parts[2].getBytes(StandardCharsets.UTF_8));
+    return signature.verify(tokenSignature);
+  }
+
+  private boolean verifyClaims(String payload) throws Exception {
+    JsonNode payloadJson = convertToJsonNode(payload);
+    String issuer = payloadJson.get("iss").textValue();
+
+    return issuer.equals(authorizationServerId);
+  }
+
+  private String getSubject(String payload) throws Exception {
+    JsonNode payloadJson = convertToJsonNode(payload);
+    String nric = payloadJson.get("sub").textValue().split(",")[0].substring(2);
+    System.out.println("[TokenExchangeRequest] NRIC is: " + nric);
+    return nric;
+  }
+
+
 }
