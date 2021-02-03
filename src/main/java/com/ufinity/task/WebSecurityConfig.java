@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .logout().logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"));
 
-    http.csrf().ignoringAntMatchers("/user/login").ignoringAntMatchers("/user/signup");
+    http.csrf().ignoringAntMatchers("/user/login").ignoringAntMatchers("/user/signup").ignoringAntMatchers("/login/oauth2/code/singpass");
 
     http.sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

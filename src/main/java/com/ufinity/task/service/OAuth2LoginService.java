@@ -2,14 +2,17 @@ package com.ufinity.task.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ufinity.task.utils.TokenUtils;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -25,8 +28,9 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+
+import static com.ufinity.task.utils.Constants.ERROR;
+import static com.ufinity.task.utils.Constants.OK;
 
 @Service
 public class OAuth2LoginService {
@@ -53,7 +57,9 @@ public class OAuth2LoginService {
     return redirectParamsMap;
   }
 
-  public boolean processAuthCodeAndExchangeToken(String code) throws Exception{
+  public Map<String, String> processAuthCodeAndExchangeToken(String code) throws Exception{
+    Map<String, String> resultMap = new HashMap<>();
+
     HttpClient client = HttpClient.newHttpClient();
 
     HttpRequest tokenExchangeRequest = prepareTokenExchangeRequest(code);
@@ -78,7 +84,14 @@ public class OAuth2LoginService {
     // I should go and create session for this user.
     boolean canCreateSession = userInfoRequestResponse.statusCode() == 200 || userInfoRequestResponse.statusCode() == 404;
 
-    return canCreateSession;
+    if (canCreateSession) {
+      resultMap.put("code", OK);
+      resultMap.put("username", nric);
+    } else {
+      resultMap.put("code", ERROR);
+    }
+
+    return resultMap;
   }
 
   private HttpRequest prepareTokenExchangeRequest(String code) {

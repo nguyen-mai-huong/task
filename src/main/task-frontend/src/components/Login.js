@@ -60,7 +60,7 @@ function Login(props) {
   }
 
   if (props.isLogined) {
-    return <Redirect to="/home" />;
+    return <Redirect to="/home" username={username} />;
   };
 
 

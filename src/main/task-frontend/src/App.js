@@ -4,7 +4,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
 import Login from "./components/Login";
-import Waiting from "./components/Waiting";
+import SingPassCallback from "./components/SingPassCallback";
 
 function loginReducer(state, action) {
   switch(action.type) {
@@ -44,8 +44,8 @@ function App() {
             updateIsLogined = {(payload) => dispatch({type: 'UPDATE_IS_LOGINED', payload: payload})}
           />
         </Route>
-        <Route path="/waiting">
-          <Waiting 
+        <Route path="/singpass/callback">
+          <SingPassCallback 
             isLogined = {state.isLogined}
             updateIsLogined = {(payload) => dispatch({type: 'UPDATE_IS_LOGINED', payload: payload})}
           />
