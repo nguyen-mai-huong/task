@@ -16,8 +16,12 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TokenUtils {
+
+  private static final String SUBJECT_PATTERN = "([A-Z]{1})([\\d]{7,})([A-Z]{1})";
 
   // Reference: auth0 java-jwt
   public static boolean verifySignature(String token) throws InvalidKeyException, CertificateException, FileNotFoundException, NoSuchAlgorithmException, SignatureException {
@@ -47,6 +51,14 @@ public class TokenUtils {
     JsonNode payloadJson = JsonUtils.convertToJsonNode(payload);
     String nric = payloadJson.get("sub").textValue().split(",")[0].substring(2);
     return nric;
+  }
+
+  public static boolean isValidSubject(String payload) throws Exception {
+    String subject = getSubject(payload);
+
+    Pattern pattern = Pattern.compile(SUBJECT_PATTERN);
+    Matcher matcher = pattern.matcher(subject);
+    return matcher.find();
   }
 
 }

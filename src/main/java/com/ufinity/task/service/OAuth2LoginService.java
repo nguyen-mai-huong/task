@@ -9,28 +9,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -138,7 +122,7 @@ public class OAuth2LoginService {
     return request;
   }
 
-  private HttpRequest prepareGetUserInfoRequest(String nric) throws IOException {
+  private HttpRequest prepareGetUserInfoRequest(String nric) {
     String token = buildJWTToken(nric);
 
     HttpRequest getUserInfoRequest = HttpRequest.newBuilder()
@@ -149,15 +133,8 @@ public class OAuth2LoginService {
     return getUserInfoRequest;
   }
 
-  private String buildJWTToken(String subject) throws IOException {
+  private String buildJWTToken(String subject) {
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
-    String pathToSecretKey = System.getProperty("user.dir") + System.getProperty("file.separator") + "src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "resources" + System.getProperty("file.separator") + "spcp-key.pem";
-
-    Path path = Paths.get(pathToSecretKey);
-    byte[] secretKey = Files.readAllBytes(path);
-
-    Key signingKey = new SecretKeySpec(secretKey, signatureAlgorithm.getJcaName());
 
     Date now = new Date();
 
@@ -180,14 +157,10 @@ public class OAuth2LoginService {
     JsonNode payloadJson = JsonUtils.convertToJsonNode(payload);
     String issuer = payloadJson.get("iss").textValue();
 
-    return issuer.equals(authorizationServerId);
-  }
+    boolean isFromValidAuthorisationServer = issuer.equals(authorizationServerId);
+    boolean isValidSubject = TokenUtils.isValidSubject(payload);
 
-  private String getSubject(String payload) throws Exception {
-    JsonNode payloadJson = JsonUtils.convertToJsonNode(payload);
-    String nric = payloadJson.get("sub").textValue().split(",")[0].substring(2);
-    return nric;
+    return isFromValidAuthorisationServer && isValidSubject;
   }
-
 
 }
