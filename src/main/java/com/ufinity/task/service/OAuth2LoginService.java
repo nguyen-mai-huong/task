@@ -2,6 +2,8 @@ package com.ufinity.task.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ufinity.task.utils.JsonUtils;
+import com.ufinity.task.utils.TokenUtils;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -61,8 +63,6 @@ public class OAuth2LoginService {
   @Value("${oauth2.client.registration.singpass}")
   private String authorizationServerId;
 
-
-
   public Map<String, String> loginWithSingPass() {
     Map<String, String> redirectParamsMap = new HashMap<>();
     redirectParamsMap.put("authorization_uri", authorizationUri);
@@ -80,11 +80,11 @@ public class OAuth2LoginService {
     HttpResponse<String> tokenExchangeRequestResponse = client.send(tokenExchangeRequest, HttpResponse.BodyHandlers.ofString());
     System.out.println(String.format("[TokenExchangeRequest] Response: %d, %s", tokenExchangeRequestResponse.statusCode(), tokenExchangeRequestResponse.body()));
 
-    JsonNode node = convertToJsonNode((tokenExchangeRequestResponse.body()));
+    JsonNode node = JsonUtils.convertToJsonNode((tokenExchangeRequestResponse.body()));
 
     // Enable signing and try to get id token
     String idToken = node.get("id_token").textValue();
-    boolean isValidSignature = verifySignature(idToken);
+    boolean isValidSignature = TokenUtils.verifySignature(idToken);
     System.out.println("DEBUG 06: is valid signature " + isValidSignature);
 
     if (!isValidSignature) {
@@ -103,7 +103,7 @@ public class OAuth2LoginService {
     }
 
     // Subject is: s=T0066846F,u=4
-    String nric = getSubject(payload);
+    String nric = TokenUtils.getSubject(payload);
     System.out.println("[TokenExchangeRequest] NRIC is: " + nric);
 
     HttpRequest getUserInfoRequest = prepareGetUserInfoRequest(nric);
@@ -157,11 +157,6 @@ public class OAuth2LoginService {
             .GET()
             .build();
     return getUserInfoRequest;
-  }
-
-  private JsonNode convertToJsonNode(String jsonString) throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
-    return mapper.readTree(jsonString);
   }
 
   private String buildJWTToken(String subject) throws IOException {
@@ -219,14 +214,14 @@ public class OAuth2LoginService {
   }
 
   private boolean verifyClaims(String payload) throws Exception {
-    JsonNode payloadJson = convertToJsonNode(payload);
+    JsonNode payloadJson = JsonUtils.convertToJsonNode(payload);
     String issuer = payloadJson.get("iss").textValue();
 
     return issuer.equals(authorizationServerId);
   }
 
   private String getSubject(String payload) throws Exception {
-    JsonNode payloadJson = convertToJsonNode(payload);
+    JsonNode payloadJson = JsonUtils.convertToJsonNode(payload);
     String nric = payloadJson.get("sub").textValue().split(",")[0].substring(2);
     System.out.println("[TokenExchangeRequest] NRIC is: " + nric);
     return nric;
