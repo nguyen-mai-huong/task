@@ -9,4 +9,8 @@ public final class Constants {
   // User
   public static final String USER_NOT_EXIST = "user.not.exist";
   public static final String USER_CREDENTIALS_NOT_MATCH = "user.credentials.not.match";
+
+  // OAuth2
+  public static final String OAUTH2_INVALID_SIGNATURE = "oauth2.server.invalid.signature";
+  public static final String OAUTH2_INVALID_CLAIMS = "oauth2.server.invalid.claims";
 }

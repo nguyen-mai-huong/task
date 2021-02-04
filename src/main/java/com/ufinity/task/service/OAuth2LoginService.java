@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.ufinity.task.utils.Constants.ERROR;
+import static com.ufinity.task.utils.Constants.OAUTH2_INVALID_CLAIMS;
+import static com.ufinity.task.utils.Constants.OAUTH2_INVALID_SIGNATURE;
 import static com.ufinity.task.utils.Constants.OK;
 
 @Service
@@ -81,13 +83,13 @@ public class OAuth2LoginService {
     JsonNode node = convertToJsonNode((tokenExchangeRequestResponse.body()));
 
     // Enable signing and try to get id token
-
     String idToken = node.get("id_token").textValue();
     boolean isValidSignature = verifySignature(idToken);
     System.out.println("DEBUG 06: is valid signature " + isValidSignature);
 
     if (!isValidSignature) {
       resultMap.put("code", ERROR);
+      resultMap.put("error", OAUTH2_INVALID_SIGNATURE);
       return resultMap;
     }
 
@@ -96,6 +98,7 @@ public class OAuth2LoginService {
     boolean isValidClaim = verifyClaims(payload);
     if (!isValidClaim) {
       resultMap.put("code", ERROR);
+      resultMap.put("error", OAUTH2_INVALID_CLAIMS);
       return resultMap;
     }
 
@@ -115,6 +118,7 @@ public class OAuth2LoginService {
     if (canCreateSession) {
       resultMap.put("code", OK);
       resultMap.put("username", nric);
+      resultMap.put("idToken", idToken);
     } else {
       resultMap.put("code", ERROR);
     }
