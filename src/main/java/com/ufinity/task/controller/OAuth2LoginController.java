@@ -1,15 +1,12 @@
 package com.ufinity.task.controller;
 
 import com.ufinity.task.service.OAuth2LoginService;
-import com.ufinity.task.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -34,7 +31,6 @@ public class OAuth2LoginController {
     Map<String, String> resultMap = new HashMap<>();
     try {
       resultMap = oAuth2LoginService.processAuthCodeAndExchangeToken(code);
-      System.out.println("[ExchangeToken][Controller] resultMap code is: " + resultMap.get("code"));
       if (resultMap.get("code").equals(OK)) {
         request.getSession(true);
       }

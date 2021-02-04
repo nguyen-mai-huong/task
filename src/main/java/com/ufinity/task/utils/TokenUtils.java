@@ -46,7 +46,6 @@ public class TokenUtils {
   public static String getSubject(String payload) throws Exception {
     JsonNode payloadJson = JsonUtils.convertToJsonNode(payload);
     String nric = payloadJson.get("sub").textValue().split(",")[0].substring(2);
-    System.out.println("[TokenExchangeRequest] NRIC is: " + nric);
     return nric;
   }
 

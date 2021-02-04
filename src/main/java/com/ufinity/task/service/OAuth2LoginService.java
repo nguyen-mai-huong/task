@@ -1,7 +1,6 @@
 package com.ufinity.task.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ufinity.task.utils.JsonUtils;
 import com.ufinity.task.utils.TokenUtils;
 import io.jsonwebtoken.JwtBuilder;
@@ -78,14 +77,11 @@ public class OAuth2LoginService {
     HttpRequest tokenExchangeRequest = prepareTokenExchangeRequest(code);
 
     HttpResponse<String> tokenExchangeRequestResponse = client.send(tokenExchangeRequest, HttpResponse.BodyHandlers.ofString());
-    System.out.println(String.format("[TokenExchangeRequest] Response: %d, %s", tokenExchangeRequestResponse.statusCode(), tokenExchangeRequestResponse.body()));
 
     JsonNode node = JsonUtils.convertToJsonNode((tokenExchangeRequestResponse.body()));
 
-    // Enable signing and try to get id token
     String idToken = node.get("id_token").textValue();
     boolean isValidSignature = TokenUtils.verifySignature(idToken);
-    System.out.println("DEBUG 06: is valid signature " + isValidSignature);
 
     if (!isValidSignature) {
       resultMap.put("code", ERROR);
@@ -102,17 +98,14 @@ public class OAuth2LoginService {
       return resultMap;
     }
 
-    // Subject is: s=T0066846F,u=4
     String nric = TokenUtils.getSubject(payload);
-    System.out.println("[TokenExchangeRequest] NRIC is: " + nric);
 
     HttpRequest getUserInfoRequest = prepareGetUserInfoRequest(nric);
 
     HttpResponse<String> userInfoRequestResponse = client.send(getUserInfoRequest, HttpResponse.BodyHandlers.ofString());
-    System.out.println(String.format("[UserInfoRequest] Response is: %d, %s", userInfoRequestResponse.statusCode(), userInfoRequestResponse.body()));
 
-    // For this get user details info, if i get back code 200 or 404 meaning OK already
-    // I should go and create session for this user.
+    // After verifying signature, sending request to fetch user details info
+    // Code 404 is OK as MockPass sometimes returns 404 - User doesn't have info in MyInfo
     boolean canCreateSession = userInfoRequestResponse.statusCode() == 200 || userInfoRequestResponse.statusCode() == 404;
 
     if (canCreateSession) {
@@ -137,8 +130,6 @@ public class OAuth2LoginService {
       requestBody += encodedParam;
     }
 
-    System.out.println("[TokenExchangeRequest] JSON request body: " + requestBody);
-
     HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(tokenUri))
             .headers("Content-Type", "application/x-www-form-urlencoded")
@@ -150,7 +141,6 @@ public class OAuth2LoginService {
   private HttpRequest prepareGetUserInfoRequest(String nric) throws IOException {
     String token = buildJWTToken(nric);
 
-    // Send request to http://localhost:5156/myinfo/{v2,v3}/person
     HttpRequest getUserInfoRequest = HttpRequest.newBuilder()
             .uri(URI.create(String.format("http://localhost:5156/myinfo/v2/person/%s", nric)))
             .headers("Authorization", token)
@@ -162,7 +152,6 @@ public class OAuth2LoginService {
   private String buildJWTToken(String subject) throws IOException {
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    System.out.println("[UserInfoRequest][JWTToken] Current directory: " + System.getProperty("user.dir"));
     String pathToSecretKey = System.getProperty("user.dir") + System.getProperty("file.separator") + "src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "resources" + System.getProperty("file.separator") + "spcp-key.pem";
 
     Path path = Paths.get(pathToSecretKey);
@@ -184,33 +173,7 @@ public class OAuth2LoginService {
             .signWith(signatureAlgorithm, encodedKey);
     String token = builder.compact();
 
-    System.out.println("[UserInfoRequest][JWTToken] The token is " + token);
     return token;
-  }
-
-
-  // Reference: auth0 java-jwt
-  private boolean verifySignature(String token) throws InvalidKeyException, CertificateException, FileNotFoundException, NoSuchAlgorithmException, SignatureException {
-    String[] parts = token.trim().split("\\.");
-    if (parts == null || parts.length != 3) {
-      return false;
-    }
-
-    String pathToPublicKey = System.getProperty("user.dir") + System.getProperty("file.separator") + "src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "resources" + System.getProperty("file.separator") + "spcp.crt";
-    Path path = Paths.get(pathToPublicKey);
-
-    CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-    Certificate certificate = certificateFactory.generateCertificate(new FileInputStream(path.toFile()));
-    PublicKey publicKey = certificate.getPublicKey();
-
-    Signature signature = Signature.getInstance("SHA256withRSA");
-    signature.initVerify(publicKey);
-    signature.update(parts[0].getBytes(StandardCharsets.UTF_8));
-    signature.update((byte) 46);
-    signature.update(parts[1].getBytes(StandardCharsets.UTF_8));
-
-    byte[] tokenSignature = Base64.getUrlDecoder().decode(parts[2].getBytes(StandardCharsets.UTF_8));
-    return signature.verify(tokenSignature);
   }
 
   private boolean verifyClaims(String payload) throws Exception {
@@ -223,7 +186,6 @@ public class OAuth2LoginService {
   private String getSubject(String payload) throws Exception {
     JsonNode payloadJson = JsonUtils.convertToJsonNode(payload);
     String nric = payloadJson.get("sub").textValue().split(",")[0].substring(2);
-    System.out.println("[TokenExchangeRequest] NRIC is: " + nric);
     return nric;
   }
 
