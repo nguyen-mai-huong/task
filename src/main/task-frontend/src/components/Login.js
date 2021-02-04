@@ -34,6 +34,7 @@ function Login(props) {
       const responseURL = response.request.responseURL;
       if (responseURL === LOGIN_SUCCESS_URL) {
         props.updateIsLogined(true);
+        props.updateLogedInUsername(username);
       } else {
         props.updateIsLogined(false);
 

@@ -6,22 +6,25 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import SingPassCallback from "./components/SingPassCallback";
 
-function loginReducer(state, action) {
+function userReducer(state, action) {
   switch(action.type) {
     case 'UPDATE_IS_LOGINED':
       console.log("Payload is: ", action, action.payload);
       return {...state, isLogined: action.payload};
+    case 'UPDATE_LOGEDIN_USERNAME':
+      return {...state, logedInUsername: action.payload};
     default:
       return state;
   }
-
 }
 
 function App() {
 
   // define useReducer
-  const initialState = {isLogined: false};
-  const [state, dispatch] = useReducer(loginReducer, initialState);
+  const initialState = {isLogined: false, logedInUsername: ''};
+  const [state, dispatch] = useReducer(userReducer, initialState);
+
+
   
 
   return (
@@ -31,6 +34,7 @@ function App() {
           <Login 
             isLogined = {state.isLogined}
             updateIsLogined = {(payload) => dispatch({type: 'UPDATE_IS_LOGINED', payload: payload})}
+            updateLogedInUsername = {(payload) => dispatch({type: 'UPDATE_LOGEDIN_USERNAME', payload: payload})}
           />
         </Route>
         <Route path="/signup">
@@ -41,6 +45,7 @@ function App() {
         <Route path="/home">
           <Home 
             isLogined = {state.isLogined}
+            logedInUsername = {state.logedInUsername}
             updateIsLogined = {(payload) => dispatch({type: 'UPDATE_IS_LOGINED', payload: payload})}
           />
         </Route>
@@ -48,6 +53,7 @@ function App() {
           <SingPassCallback 
             isLogined = {state.isLogined}
             updateIsLogined = {(payload) => dispatch({type: 'UPDATE_IS_LOGINED', payload: payload})}
+            updateLogedInUsername = {(payload) => dispatch({type: 'UPDATE_LOGEDIN_USERNAME', payload: payload})}
           />
         </Route>
       </Switch>

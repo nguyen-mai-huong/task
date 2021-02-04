@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import httpClient from "../httpClient";
 
 function SingPassCallback(props) {
   console.log("Current location is: ", window.location);
-  const [username, setUsername] = useState('');
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -24,9 +23,9 @@ function SingPassCallback(props) {
     
     httpClient.post('login/oauth2/code/singpass', params).then((response) => {
       console.log("Response after sending auth code is: ", response);
-      if (response.data.code === "ok") {
+      if (response.data.code === "ok" && response.data.idToken) {
         props.updateIsLogined(true);
-        setUsername(response.data.username);
+        props.updateLogedInUsername(response.data.username);
       }
     }).catch((error) => {
       console.log("Error is: ", error);  
@@ -35,16 +34,8 @@ function SingPassCallback(props) {
   } 
 
   if (props.isLogined) {
-    console.log("Can I see username here? ", {username});
     return (
-      <Redirect 
-        to = {{
-          pathname: '/home',
-          state: {
-            username: `${username}`
-          }
-        }}
-      />
+      <Redirect to="/home" />
     )
   } 
 

@@ -23,7 +23,7 @@ function Home(props) {
   return (
     <Container>
       <Typography component="h5">
-        Hello {props.username}
+        Hello {props.logedInUsername}
       </Typography>
       <Button
           variant="text"
