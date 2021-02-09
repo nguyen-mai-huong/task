@@ -1,28 +1,34 @@
+import { ChangeEvent, FormEvent, SyntheticEvent } from 'react';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import httpClient from '../../httpClient';
+
+import { Grid, Typography, TextField, Button, CssBaseline, Paper, Box, Link } from '@material-ui/core';
+import Copyright from '../../components/Copyright';
+import useStyles from '../../style/styles';
+
+import { UserState } from '../UserState';
+import { logIn } from '../userActions';
+import { selectIsLogined } from '../userSelector';
 import { Redirect } from 'react-router-dom';
 
-import httpClient from '../httpClient';
+const Login = () => {
+  const classes = useStyles();
 
-import { Grid, Typography, TextField, Button, Box, CssBaseline, Paper, Link } from '@material-ui/core';
-import useStyles from '../styles';
-import Copyright from '../components/Copyright';
-
-function Login(props) {
-  // process.env.PORT = 3000;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const classes = useStyles();
+  const dispatch = useDispatch();
 
-  const handleUsername = (event) => {
+  const handleUsername = (event: ChangeEvent<HTMLInputElement>): void => {
     setUsername(event.target.value);
   }
 
-  const handlePassword = (event) => {
+  const handlePassword = (event: ChangeEvent<HTMLInputElement>): void => {
     setPassword(event.target.value);
   }
 
-  const handleLogin = (event) => {
+  const handleLogin = (event: FormEvent): void => {
     event.preventDefault();
 
     const params = new URLSearchParams();
@@ -33,11 +39,16 @@ function Login(props) {
       console.log("Response: ", response, response.request.response);
       const responseURL = response.request.responseURL;
       if (responseURL === LOGIN_SUCCESS_URL) {
-        props.updateIsLogined(true);
-        props.updateLogedInUsername(username);
+        const successUserLogin: UserState = {
+          isLogined: true,
+          username: username
+        }
+        dispatch(logIn(successUserLogin));
       } else {
-        props.updateIsLogined(false);
-
+        const failedUserLogin: UserState = {
+          isLogined: false
+        }
+        dispatch(logIn(failedUserLogin));
       }  
 
     }).catch((error) => {
@@ -45,7 +56,7 @@ function Login(props) {
     })
   }
 
-  const handleSingPassLogin = (event) => {
+  const handleSingPassLogin = (event: FormEvent): void => {
     event.preventDefault();
 
     httpClient.get('/singpass/login').then((response) => {
@@ -56,21 +67,22 @@ function Login(props) {
     })
   }
 
-  const handleRedirectToSingPass = (redirect_uri) => {
-    window.location = `http://localhost:5156/singpass/authorize?redirect_uri=${redirect_uri}`;
+  const handleRedirectToSingPass = (redirect_uri: string) => {
+    window.location.href = `http://localhost:5156/singpass/authorize?redirect_uri=${redirect_uri}`;
   }
 
-  if (props.isLogined) {
-    return <Redirect to="/home" username={username} />;
-  };
+  const isLogined = useSelector(selectIsLogined);
 
+  if (isLogined) {
+    return <Redirect to="/home" />;
+  }
 
 
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <Grid order={1} item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid order={2} item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+      <Grid item xs={false} sm={4} md={7} className={classes.image} />
+      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>
           <Typography component="h1" variant="h5">
             Singapore Examinations and Assessment Board
@@ -102,16 +114,16 @@ function Login(props) {
               color="primary"
               type="submit"
               fullWidth
-              margin="normal"    
               onClick={handleLogin}
+              
             >
               Log In
             </Button>
             <Grid container direction="row" justify="center" className={classes.singpass}>
               <Grid item>
-                <Link href="#" variant="body2" color="textSecondary" onClick={handleSingPassLogin}>
+                <Button color="primary" onClick={handleSingPassLogin}>
                   Or log in with SingPass
-                </Link>
+                </Button>
               </Grid>
             </Grid>
             <Box mt={5}>
@@ -122,10 +134,7 @@ function Login(props) {
       </Grid>
     </Grid>
   )
-
-
-}
-
+};
 
 const LOGIN_SUCCESS_URL = 'http://localhost:8080/';
 
