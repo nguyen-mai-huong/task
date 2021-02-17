@@ -1,5 +1,5 @@
-import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@material-ui/core";
-import { useCallback, useEffect, useState } from "react";
+import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from "@material-ui/core";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import httpClient from '../../httpClient';
 
 import dataTableStyles from '../../style/UserDataTableStyles';
@@ -12,21 +12,67 @@ const UserListing = () => {
   ];
 
   const [users, setUsers] = useState(rows);
+  const [userCount, setUserCount] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
   const classes = dataTableStyles();
 
   const handleGetUsers = useCallback(() => {
     const params = {
-      recordsPerPage: 5
+      recordsPerPage: rowsPerPage
     };
+
     httpClient.get("user/list", { params }).then((response) => {
       console.log("Users: ", response.data);
-      const userList = response.data.data;
+      const userList = response.data.userList;
+      const userCount = response.data.userCount;
       setUsers(userList);
+      setUserCount(userCount);
 
     }).catch((error) => {
       console.log("Error: ", error);
     })
   }, []);
+
+  const handleGetPaginatedUsers = (next: boolean) => {
+    let params;
+    if (next) {
+      params = {
+        recordsPerPage: rowsPerPage,
+        rightCursor: Math.max(...users.map(user => user.id))
+      }
+    } else {
+      params = {
+        recordsPerPage: rowsPerPage,
+        leftCursor: Math.min(...users.map(user => user.id))
+      }
+    }
+
+    httpClient.get("user/list", { params }).then((response) => {
+      console.log("Users: ", response.data);
+      const userList = response.data.userList;
+
+      if (!next) {
+        userList.reverse();
+      }
+
+      setUsers(userList);
+    }).catch((error) => {
+      console.log("Error: ", error);
+    })
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    const next = page < newPage ? true : false;
+    handleGetPaginatedUsers(next);
+    setPage(newPage);
+
+  };
+
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }
 
   useEffect(() => {
     handleGetUsers();
@@ -52,7 +98,7 @@ const UserListing = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user, index) => {
+              {users.length > 0 && users.map((user, index) => {
                 return (
                   <TableRow key={user.id}>
                     <TableCell>
@@ -70,6 +116,15 @@ const UserListing = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination 
+          rowsPerPageOptions={[5, 10, 50]}
+          component="div"
+          count={userCount}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
       </Paper>
     </div>
   )
