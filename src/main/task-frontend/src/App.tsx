@@ -1,6 +1,6 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Login from '../src/userModule/pages/Login';
-import Home from '../src/userModule/pages/Home';
+import Dashboard from './userModule/pages/Dashboard';
 import Signup from './userModule/pages/Signup';
 import SingPassCallback from './userModule/pages/SingPassCallback';
 
@@ -11,8 +11,8 @@ const App = () => {
         <Route exact path="/">
           <Login/>
         </Route>
-        <Route path="/home">
-          <Home />
+        <Route path="/dashboard">
+          <Dashboard />
         </Route>
         <Route path="/signup">
           <Signup />

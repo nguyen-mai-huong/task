@@ -44,7 +44,7 @@ const SingPassCallback = () => {
 
   if (isLogined) {
     return (
-      <Redirect to="/home" />
+      <Redirect to="/dashboard" />
     )
   } 
 

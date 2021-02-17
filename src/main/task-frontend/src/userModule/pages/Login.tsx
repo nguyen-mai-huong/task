@@ -1,9 +1,9 @@
-import { ChangeEvent, FormEvent, SyntheticEvent } from 'react';
+import { ChangeEvent, FormEvent } from 'react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import httpClient from '../../httpClient';
 
-import { Grid, Typography, TextField, Button, CssBaseline, Paper, Box, Link } from '@material-ui/core';
+import { Grid, Typography, TextField, Button, CssBaseline, Paper, Box } from '@material-ui/core';
 import Copyright from '../../components/Copyright';
 import useStyles from '../../style/styles';
 
@@ -74,7 +74,7 @@ const Login = () => {
   const isLogined = useSelector(selectIsLogined);
 
   if (isLogined) {
-    return <Redirect to="/home" />;
+    return <Redirect to="/dashboard" />;
   }
 
 
