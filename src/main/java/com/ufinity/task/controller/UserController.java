@@ -40,17 +40,26 @@ public class UserController {
 
   @GetMapping("user/list")
   public Map<String, Object> getUsers(@RequestParam("recordsPerPage") int recordsPerPage,
-                                      @RequestParam(value = "cursor", required = false) Long userId) {
+                                      @RequestParam(value = "leftCursor", required = false) Long leftUserId,
+                                      @RequestParam(value = "rightCursor", required = false) Long rightUserId) {
     Map<String, Object> resultMap = new HashMap<>();
     List<UserQueryModel> userResultList = new ArrayList<>();
-    if (userId == null) {
+    Long userCount = null;
+
+    if (leftUserId == null && rightUserId == null) {
       userResultList = userQueryService.getUsers(recordsPerPage);
-    } else {
-      userResultList = userQueryService.getNextUsers(recordsPerPage, userId);
+      userCount = userQueryService.countUsers();
+    } else if (leftUserId != null) {
+      userResultList = userQueryService.getPreviousUsers(recordsPerPage, leftUserId);
+    } else if (rightUserId != null) {
+      userResultList = userQueryService.getNextUsers(recordsPerPage, rightUserId);
     }
 
     resultMap.put("code", OK);
-    resultMap.put("data", userResultList);
+    resultMap.put("userList", userResultList);
+    if (userCount != null) {
+      resultMap.put("userCount", userCount);
+    }
     return resultMap;
   }
 

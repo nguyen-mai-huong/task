@@ -17,4 +17,10 @@ public interface UserQueryDao extends JpaRepository<User, Long> {
 
   @Query(value = "SELECT * FROM user u WHERE id > :cursor LIMIT :numOfRecords", nativeQuery = true)
   List<User> getNextUsers(@Param("cursor") long cursor, @Param("numOfRecords") int numOfRecords);
+
+  @Query(value = "SELECT * FROM user u WHERE id < :cursor ORDER BY u.id DESC LIMIT :numOfRecords", nativeQuery = true)
+  List<User> getPreviousUsers(@Param("cursor") long cursor, @Param("numOfRecords") int numOfRecords);
+
+  @Query(value = "SELECT COUNT(*) FROM user u", nativeQuery = true)
+  Long countUsers();
 }

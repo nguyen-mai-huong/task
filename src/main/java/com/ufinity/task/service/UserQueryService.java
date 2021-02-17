@@ -29,4 +29,15 @@ public class UserQueryService implements IUserQueryService {
     List<User> userListFromDatabase = userQueryDao.getNextUsers(cursor, recordsPerPage);
     return  UserUtils.convertToQueryList(userListFromDatabase);
   }
+
+  @Override
+  public List<UserQueryModel> getPreviousUsers(int recordsPerPage, long cursor) {
+    List<User> userListFromDatabase = userQueryDao.getPreviousUsers(cursor, recordsPerPage);
+    return  UserUtils.convertToQueryList(userListFromDatabase);
+  }
+
+  @Override
+  public Long countUsers() {
+    return userQueryDao.countUsers();
+  }
 }
