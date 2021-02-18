@@ -1,6 +1,9 @@
 package com.ufinity.task.security;
 
+import com.ufinity.task.utils.Constants;
+import org.json.JSONObject;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.ufinity.task.utils.Constants.OK;
+
 @Service
 public class AuthenticationSuccessHandlerService implements AuthenticationSuccessHandler {
 
@@ -19,13 +24,20 @@ public class AuthenticationSuccessHandlerService implements AuthenticationSucces
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
     String sessionId = request.getSession().getId();
 
-    Cookie cookie = new Cookie("JSESSIONID", sessionId);
-    response.addCookie(cookie);
+    JSONObject json = new JSONObject();
+    json.put("code", OK);
+    json.put("sessionId", sessionId);
+    if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("SYS_ADMIN"))) {
+      json.put("isAdmin", true);
+    } else {
+      json.put("isAdmin", false);
+    }
 
     response.setContentType("text/plain");
     response.setCharacterEncoding("UTF-8");
+    response.getWriter().write(json.toString());
 
-    response.getWriter().write(sessionId);
+
 
     System.out.println("Con coc ngu ngu");
   }

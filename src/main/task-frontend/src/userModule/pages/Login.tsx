@@ -36,17 +36,16 @@ const Login = () => {
     params.append('password', password);
 
     httpClient.post('/user/login', params).then((response) => {
-      console.log("Response 02: ", response.headers);
-      // console.log("Response: ", response, response.request.response);
-      const responseURL = response.request.responseURL;
-      const sessionId = response.data;
-      if (response.status === 200 && sessionId) {
+      console.log("Response: ", response, response.request.response);
+      const data = response.data;
+      if (data.code === "ok") {
         const successUserLogin: UserState = {
           isLogined: true,
+          isAdmin: data.isAdmin,
           username: username
         }
         dispatch(logIn(successUserLogin));
-        document.cookie = `JSESSIONID=${sessionId}`;
+        document.cookie = `JSESSIONID=${data.sessionId}`;
         
       } else {
         const failedUserLogin: UserState = {

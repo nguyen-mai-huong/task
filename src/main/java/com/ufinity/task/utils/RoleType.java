@@ -1,7 +1,8 @@
 package com.ufinity.task.utils;
 
 public enum RoleType {
-  ADMIN("ADMIN"),
+  SYS_ADMIN("SYS_ADMIN"),
+  ADMIN("ADMIN"), // User admin
   USER("USER");
 
   private final String displayName;

@@ -20,11 +20,7 @@ const UserListing = () => {
   const handleGetUsers = useCallback(() => {
     const url = `user/list?recordsPerPage=${rowsPerPage}`;
 
-    const headers = {
-      Cookie: document.cookie
-    };
-
-    httpClient.get(`${url}`, { headers: headers }).then((response) => {
+    httpClient.get(`${url}`, { withCredentials: true }).then((response) => {
       console.log("Users: ", response.data);
       const userList = response.data.userList;
       const userCount = response.data.userCount;
@@ -46,11 +42,7 @@ const UserListing = () => {
       url = `user/list?recordsPerPage=${rowsPerPage}&leftCursor=${leftCursor}`;
     }
 
-    const headers = {
-      Cookie: document.cookie
-    };
-
-    httpClient.get(`${url}`, { headers: headers }).then((response) => {
+    httpClient.get(`${url}`, { withCredentials: true }).then((response) => {
       console.log("Users: ", response.data);
       const userList = response.data.userList;
 
