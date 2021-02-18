@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -44,6 +45,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private UserAuthenticationHelperService helperService;
 
   @Autowired
+  private AuthenticationSuccessHandler successHandler;
+
+  @Autowired
   private CorsConfigurationSource corsConfigurationSource;
 
   @Override
@@ -59,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/user/signup").permitAll()
             .anyRequest().authenticated()
             .and()
-            .formLogin().loginProcessingUrl("/user/login").usernameParameter("username").passwordParameter("password")
+            .formLogin().loginProcessingUrl("/user/login").usernameParameter("username").passwordParameter("password").successHandler(successHandler)
             .and()
             .logout().logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"));
 

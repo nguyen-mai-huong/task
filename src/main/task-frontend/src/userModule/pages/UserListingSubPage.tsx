@@ -18,11 +18,13 @@ const UserListing = () => {
   const classes = dataTableStyles();
 
   const handleGetUsers = useCallback(() => {
-    const params = {
-      recordsPerPage: rowsPerPage
+    const url = `user/list?recordsPerPage=${rowsPerPage}`;
+
+    const headers = {
+      Cookie: document.cookie
     };
 
-    httpClient.get("user/list", { params }).then((response) => {
+    httpClient.get(`${url}`, { headers: headers }).then((response) => {
       console.log("Users: ", response.data);
       const userList = response.data.userList;
       const userCount = response.data.userCount;
@@ -35,20 +37,20 @@ const UserListing = () => {
   }, []);
 
   const handleGetPaginatedUsers = (next: boolean) => {
-    let params;
+    let url;
     if (next) {
-      params = {
-        recordsPerPage: rowsPerPage,
-        rightCursor: Math.max(...users.map(user => user.id))
-      }
+      const rightCursor = Math.max(...users.map(user => user.id));
+      url = `user/list?recordsPerPage=${rowsPerPage}&rightCursor=${rightCursor}`;
     } else {
-      params = {
-        recordsPerPage: rowsPerPage,
-        leftCursor: Math.min(...users.map(user => user.id))
-      }
+      const leftCursor = Math.min(...users.map(user => user.id));
+      url = `user/list?recordsPerPage=${rowsPerPage}&leftCursor=${leftCursor}`;
     }
 
-    httpClient.get("user/list", { params }).then((response) => {
+    const headers = {
+      Cookie: document.cookie
+    };
+
+    httpClient.get(`${url}`, { headers: headers }).then((response) => {
       console.log("Users: ", response.data);
       const userList = response.data.userList;
 

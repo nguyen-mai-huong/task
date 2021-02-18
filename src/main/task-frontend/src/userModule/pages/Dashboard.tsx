@@ -72,6 +72,7 @@ const Dashboard = () => {
     httpClient.get("/user/logout").then((response) => {
       console.log("Response: ", response);
 
+      document.cookie = '';
       const successUserLogout: UserState = {
         isLogined: false
       }
