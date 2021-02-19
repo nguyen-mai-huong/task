@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Redirect, useRouteMatch, Link, Router, Switch, Route } from "react-router-dom";
 import React, { useState } from 'react';
 
-import { selectIsLogined, selectUsername } from "../userSelector";
+import { selectIsAdmin, selectIsLogined } from "../userSelector";
 import httpClient from '../../httpClient';
 import { logOut } from "../userActions";
 import { UserState } from "../UserState";
@@ -19,50 +19,28 @@ import {
   Toolbar, 
   IconButton, 
   Drawer, 
-  Divider, 
-  List, 
-  ListItem, 
-  ListItemIcon, 
-  ListItemText, 
-  Paper, 
-  TableContainer, 
-  Table, 
-  TableHead,
-  TableRow,
-  TableCell, 
-  TableBody
+  Divider
 } from '@material-ui/core';
 
 // import useStyles from '../../style/styles';
 import useStyles from '../../style/HomeStyles';
-import dataTableStyles from '../../style/UserDataTableStyles';
 import clsx from 'clsx';
-import HomeIcon from '@material-ui/icons/Home';
-import PeopleIcon from '@material-ui/icons/People';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import UserListing from "./UserListingSubPage";
 
 const Dashboard = () => {
   const isLogined = useSelector(selectIsLogined);
-  const username = useSelector(selectUsername);
+  const isAdmin = useSelector(selectIsAdmin);
   const [open, setOpen] = useState(true);
-  const [users, setUsers] = useState([]);
 
   const history = createBrowserHistory();
-
-
-  // const userInfo: UserInfo = {
-  //   username: useSelector(selectUsername)
-  // };
-  
 
   const { url, path } = useRouteMatch();
 
   const dispatch = useDispatch();
   
   const classes = useStyles();
-  const tableClasses = dataTableStyles();
 
   if (!isLogined) {
     return <Redirect to="/" />;
@@ -83,35 +61,12 @@ const Dashboard = () => {
 
   }
 
-  const handleGetUsers = (): void => {
-    const params = {
-      recordsPerPage: 5
-    };
-    httpClient.get("user/list", { params }).then((response) => {
-      console.log("Response: ", response);
-      const users = response.data;
-      setUsers(users);
-    }).catch((error) => {
-      console.log("Error: ", error);
-    })
-  }
-
-
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  // User data table
-
-  const rows = [
-    { id: 1, username: "admin", email: "admin@ufinity.com" },
-    { id: 5, username: "tester01", email: "tester01@ufinity.com"},
-    { id: 10, username: "tester02", email: "tester01@ufinity.com"},
-  ];
-
-
 
   return (
     <Router history={history}>
@@ -156,9 +111,11 @@ const Dashboard = () => {
                   <li>
                     <Link to={`${url}/home`}>Home</Link>
                   </li>
-                  <li>
-                    <Link to={`${url}/user-listing`}>User Listing</Link>
+                  {isAdmin?
+                  <li> 
+                    <Link to={`${url}/user-listing`}>User Management</Link>
                   </li>
+                  : null}
                 </ul>
               </nav>
             </div>
@@ -168,7 +125,7 @@ const Dashboard = () => {
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
           <Switch>
-              <Route path={`${path}/home`} component={UserListing} />
+              <Route path={`${path}/home`} component={Home} />
               <Route path={`${path}/user-listing`} component={UserListing} />
             </Switch>
 

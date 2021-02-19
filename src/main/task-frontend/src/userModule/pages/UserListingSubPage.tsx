@@ -6,9 +6,7 @@ import dataTableStyles from '../../style/UserDataTableStyles';
 
 const UserListing = () => {
   const rows = [
-    { id: 1, username: "admin", email: "admin@ufinity.com" },
-    { id: 5, username: "tester01", email: "tester01@ufinity.com"},
-    { id: 10, username: "tester02", email: "tester01@ufinity.com"},
+    { id: 1, username: "admin", email: "admin@ufinity.com" }
   ];
 
   const [users, setUsers] = useState(rows);
@@ -17,7 +15,7 @@ const UserListing = () => {
   const [page, setPage] = useState(0);
   const classes = dataTableStyles();
 
-  const handleGetUsers = useCallback(() => {
+  const handleGetUsers = useCallback((rowsPerPage) => {
     const url = `user/list?recordsPerPage=${rowsPerPage}`;
 
     httpClient.get(`${url}`, { withCredentials: true }).then((response) => {
@@ -64,12 +62,13 @@ const UserListing = () => {
   };
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    setRowsPerPage(parseInt(event.target.value));
+    handleGetUsers(event.target.value);
     setPage(0);
   }
 
   useEffect(() => {
-    handleGetUsers();
+    handleGetUsers(rowsPerPage);
   }, [handleGetUsers]);
 
   return (
@@ -92,7 +91,7 @@ const UserListing = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.length > 0 && users.map((user, index) => {
+              {users.map((user, index) => {
                 return (
                   <TableRow key={user.id}>
                     <TableCell>

@@ -139,6 +139,4 @@ const Login = () => {
   )
 };
 
-const LOGIN_SUCCESS_URL = 'http://localhost:8080/';
-
 export default Login;

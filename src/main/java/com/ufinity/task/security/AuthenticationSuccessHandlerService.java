@@ -1,19 +1,14 @@
 package com.ufinity.task.security;
 
-import com.ufinity.task.utils.Constants;
 import org.json.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.ufinity.task.utils.Constants.OK;
 
@@ -37,8 +32,5 @@ public class AuthenticationSuccessHandlerService implements AuthenticationSucces
     response.setCharacterEncoding("UTF-8");
     response.getWriter().write(json.toString());
 
-
-
-    System.out.println("Con coc ngu ngu");
   }
 }

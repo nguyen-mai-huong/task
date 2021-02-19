@@ -13,6 +13,7 @@ const userReducer = (state = INITIAL_STATE, action: LoginActionTypes): UserState
       return {
         ...state,
         isLogined: action.payload.isLogined,
+        isAdmin: action.payload.isAdmin,
         username: action.payload.username
       }
     case LOG_OUT:
