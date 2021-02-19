@@ -6,6 +6,7 @@ import com.ufinity.task.service.UserQueryService;
 import com.ufinity.task.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import java.util.Map;
 import static com.ufinity.task.utils.Constants.OK;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class UserController {
   private UserService userService;
   private UserQueryService userQueryService;
@@ -63,8 +65,6 @@ public class UserController {
     if (userCount != null) {
       resultMap.put("userCount", userCount);
     }
-
-    response.addHeader("Access-Control-Allow-Credentials", "true");
 
     return resultMap;
   }
