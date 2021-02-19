@@ -45,19 +45,18 @@ public class UserController {
   @GetMapping("user/list")
   @PreAuthorize("hasAuthority('SYS_ADMIN')")
   public Map<String, Object> getUsers(@RequestParam("recordsPerPage") int recordsPerPage,
-                                      @RequestParam(value = "leftCursor", required = false) Long leftUserId,
-                                      @RequestParam(value = "rightCursor", required = false) Long rightUserId, HttpServletResponse response) {
+                                      @RequestParam(value = "pageNbr", required = false) Integer pageNbr, HttpServletResponse response) {
     Map<String, Object> resultMap = new HashMap<>();
     List<UserQueryModel> userResultList = new ArrayList<>();
     Long userCount = null;
 
-    if (leftUserId == null && rightUserId == null) {
+    if (pageNbr == null) {
       userResultList = userQueryService.getUsers(recordsPerPage);
       userCount = userQueryService.countUsers();
-    } else if (leftUserId != null) {
-      userResultList = userQueryService.getPreviousUsers(recordsPerPage, leftUserId);
-    } else if (rightUserId != null) {
-      userResultList = userQueryService.getNextUsers(recordsPerPage, rightUserId);
+    }
+    else {
+      long offset = (long) pageNbr * recordsPerPage;
+      userResultList = userQueryService.getPaginatedUsers(recordsPerPage, offset);
     }
 
     resultMap.put("code", OK);
@@ -65,7 +64,6 @@ public class UserController {
     if (userCount != null) {
       resultMap.put("userCount", userCount);
     }
-
     return resultMap;
   }
 

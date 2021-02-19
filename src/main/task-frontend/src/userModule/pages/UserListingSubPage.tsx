@@ -30,24 +30,12 @@ const UserListing = () => {
     })
   }, []);
 
-  const handleGetPaginatedUsers = (next: boolean) => {
-    let url;
-    if (next) {
-      const rightCursor = Math.max(...users.map(user => user.id));
-      url = `user/list?recordsPerPage=${rowsPerPage}&rightCursor=${rightCursor}`;
-    } else {
-      const leftCursor = Math.min(...users.map(user => user.id));
-      url = `user/list?recordsPerPage=${rowsPerPage}&leftCursor=${leftCursor}`;
-    }
+  const handleGetPaginatedUsers = (page: number) => {
+    const url = `user/list?recordsPerPage=${rowsPerPage}&pageNbr=${page}`;
 
     httpClient.get(`${url}`, { withCredentials: true }).then((response) => {
       console.log("Users: ", response.data);
       const userList = response.data.userList;
-
-      if (!next) {
-        userList.reverse();
-      }
-
       setUsers(userList);
     }).catch((error) => {
       console.log("Error: ", error);
@@ -55,8 +43,7 @@ const UserListing = () => {
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    const next = page < newPage ? true : false;
-    handleGetPaginatedUsers(next);
+    handleGetPaginatedUsers(newPage);
     setPage(newPage);
 
   };

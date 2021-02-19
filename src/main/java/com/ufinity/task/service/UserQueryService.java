@@ -25,6 +25,12 @@ public class UserQueryService implements IUserQueryService {
   }
 
   @Override
+  public List<UserQueryModel> getPaginatedUsers(int recordsPerPage, long offset) {
+    List<User> userListFromDatabase =  userQueryDao.getPaginatedUsers(recordsPerPage, offset);
+    return UserUtils.convertToQueryList(userListFromDatabase);
+  }
+
+  @Override
   public List<UserQueryModel> getNextUsers(int recordsPerPage, long cursor) {
     List<User> userListFromDatabase = userQueryDao.getNextUsers(cursor, recordsPerPage);
     return  UserUtils.convertToQueryList(userListFromDatabase);
